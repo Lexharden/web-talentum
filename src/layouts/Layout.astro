@@ -1,0 +1,149 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import WhatsAppButton from '../components/WhatsAppButton.astro';
+import '../styles/global.css';
+import {
+  COMPANY_NAME,
+  META_DESCRIPTION_ES,
+  META_DESCRIPTION_EN,
+  META_KEYWORDS_ES,
+  META_KEYWORDS_EN,
+  OG_IMAGE,
+  ENABLE_WHATSAPP,
+  CONTACT_EMAIL,
+  PHONE_DISPLAY,
+  BUSINESS_COUNTRY,
+  BUSINESS_HOURS_OPEN,
+  BUSINESS_HOURS_CLOSE,
+  getSocialLinks,
+  SITE_URL,
+} from '../lib/constants';
+
+interface Props {
+  title: string;
+  description?: string;
+  lang?: string;
+  keywords?: string;
+  ogImage?: string;
+}
+
+const {
+  title,
+  description,
+  lang = 'es',
+  keywords,
+  ogImage = OG_IMAGE,
+} = Astro.props;
+
+// Set defaults after destructuring
+const finalDescription = description || (lang === 'es' ? META_DESCRIPTION_ES : META_DESCRIPTION_EN);
+const finalKeywords = keywords || (lang === 'es' ? META_KEYWORDS_ES : META_KEYWORDS_EN);
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site || SITE_URL);
+const siteName = COMPANY_NAME;
+const socialLinks = getSocialLinks();
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Primary Meta Tags -->
+    <title>{title}</title>
+    <meta name="title" content={title} />
+    <meta name="description" content={finalDescription} />
+    <meta name="keywords" content={finalKeywords} />
+    <meta name="author" content={siteName} />
+    <meta name="robots" content="index, follow" />
+    <meta name="language" content={lang} />
+    <meta name="revisit-after" content="7 days" />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Alternate Languages -->
+    <link rel="alternate" hreflang="es" href={`${Astro.site}es/`} />
+    <link rel="alternate" hreflang="en" href={`${Astro.site}en/`} />
+    <link rel="alternate" hreflang="x-default" href={`${Astro.site}es/`} />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={finalDescription} />
+    <meta property="og:image" content={new URL(ogImage, Astro.site)} />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:locale" content={lang === 'es' ? 'es_ES' : 'en_US'} />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalURL} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={finalDescription} />
+    <meta name="twitter:image" content={new URL(ogImage, Astro.site)} />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#DC2626" />
+
+    <!-- Generator -->
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://wa.me" />
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "ProfessionalService",
+      "name": siteName,
+      "description": finalDescription,
+      "url": Astro.site,
+      "logo": new URL('/logo.png', Astro.site),
+      "image": new URL(ogImage, Astro.site),
+      "telephone": PHONE_DISPLAY,
+      "email": CONTACT_EMAIL,
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": BUSINESS_COUNTRY
+      },
+      "geo": {
+        "@type": "GeoCoordinates"
+      },
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        "opens": BUSINESS_HOURS_OPEN,
+        "closes": BUSINESS_HOURS_CLOSE
+      },
+      "priceRange": "$$",
+      "serviceType": ["Recruitment", "Human Resources", "Consulting"],
+      "areaServed": {
+        "@type": "Country",
+        "name": "United States"
+      },
+      "sameAs": socialLinks.map(link => link.url)
+    })} />
+  </head>
+  <body class="bg-white">
+    <Header />
+    <main>
+      <slot />
+    </main>
+    <Footer />
+    {ENABLE_WHATSAPP && <WhatsAppButton />}
+
+    <!-- Performance optimization: Defer non-critical scripts -->
+    <script is:inline>
+      // Add smooth scroll behavior
+      document.documentElement.style.scrollBehavior = 'smooth';
+    </script>
+  </body>
+</html>

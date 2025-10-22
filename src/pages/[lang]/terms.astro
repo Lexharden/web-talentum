@@ -1,0 +1,164 @@
+---
+import LegalLayout from '../../layouts/LegalLayout.astro';
+import { getLangFromUrl } from '../../i18n/utils';
+import { languages } from '../../i18n';
+import { COMPANY_NAME, CONTACT_EMAIL, SITE_URL } from '../../lib/constants';
+
+export function getStaticPaths() {
+  return Object.keys(languages).map((lang) => ({
+    params: { lang },
+  }));
+}
+
+const lang = getLangFromUrl(Astro.url);
+const title = lang === 'es' ? 'Términos y Condiciones' : 'Terms and Conditions';
+const lastUpdated = lang === 'es' ? '01 de Octubre, 2025' : 'October 01, 2025';
+---
+
+<LegalLayout title={title} lastUpdated={lastUpdated}>
+  {lang === 'es' ? (
+    <>
+      <h2>1. Aceptación de los Términos</h2>
+      <p>
+        Al acceder y utilizar el sitio web de <strong>{COMPANY_NAME}</strong> ({SITE_URL}), usted acepta estar sujeto a estos términos y condiciones de uso, todas las leyes y regulaciones aplicables, y acepta que es responsable del cumplimiento de las leyes locales aplicables.
+      </p>
+
+      <h2>2. Uso del Sitio Web</h2>
+      <h3>2.1 Licencia de Uso</h3>
+      <p>
+        Se le otorga permiso para descargar temporalmente una copia de los materiales en el sitio web de {COMPANY_NAME} para visualización personal y no comercial únicamente.
+      </p>
+
+      <h3>2.2 Restricciones</h3>
+      <p>Usted no puede:</p>
+      <ul>
+        <li>Modificar o copiar los materiales</li>
+        <li>Usar los materiales con fines comerciales</li>
+        <li>Intentar realizar ingeniería inversa de cualquier software del sitio</li>
+        <li>Eliminar cualquier nota de derechos de autor o propiedad de los materiales</li>
+        <li>Transferir los materiales a otra persona</li>
+      </ul>
+
+      <h2>3. Servicios Profesionales</h2>
+      <p>
+        Los servicios de recursos humanos ofrecidos por {COMPANY_NAME} están sujetos a acuerdos contractuales separados. La información en este sitio web es solo para fines informativos y no constituye una oferta vinculante de servicios.
+      </p>
+
+      <h2>4. Exactitud de la Información</h2>
+      <p>
+        Los materiales que aparecen en el sitio web de {COMPANY_NAME} pueden incluir errores técnicos, tipográficos o fotográficos. {COMPANY_NAME} no garantiza que ninguno de los materiales en su sitio web sea preciso, completo o actual.
+      </p>
+
+      <h2>5. Propiedad Intelectual</h2>
+      <p>
+        Todo el contenido del sitio, incluyendo textos, gráficos, logotipos, iconos, imágenes y software, es propiedad de {COMPANY_NAME} o de sus proveedores de contenido y está protegido por leyes de derechos de autor internacionales.
+      </p>
+
+      <h2>6. Enlaces a Terceros</h2>
+      <p>
+        {COMPANY_NAME} no ha revisado todos los sitios vinculados a su sitio web y no es responsable del contenido de ningún sitio vinculado. La inclusión de cualquier enlace no implica respaldo por parte de {COMPANY_NAME}.
+      </p>
+
+      <h2>7. Limitación de Responsabilidad</h2>
+      <p>
+        En ningún caso {COMPANY_NAME} o sus proveedores serán responsables de daños (incluidos, entre otros, daños por pérdida de datos o beneficios, o debido a la interrupción del negocio) que surjan del uso o la imposibilidad de usar los materiales en el sitio web de {COMPANY_NAME}.
+      </p>
+
+      <h2>8. Privacidad y Protección de Datos</h2>
+      <p>
+        Su uso de este sitio web también está regido por nuestra <a href={`/${lang}/privacy`}>Política de Privacidad</a>. Por favor, revísela para comprender nuestras prácticas.
+      </p>
+
+      <h2>9. Modificaciones de los Términos</h2>
+      <p>
+        {COMPANY_NAME} puede revisar estos términos de servicio en cualquier momento sin previo aviso. Al usar este sitio web, usted acepta estar sujeto a la versión actual de estos términos de servicio.
+      </p>
+
+      <h2>10. Ley Aplicable</h2>
+      <p>
+        Estos términos y condiciones se rigen e interpretan de acuerdo con las leyes aplicables y usted se somete irrevocablemente a la jurisdicción exclusiva de los tribunales en esa ubicación.
+      </p>
+
+      <h2>11. Contacto</h2>
+      <p>
+        Si tiene preguntas sobre estos Términos y Condiciones, contáctenos en:
+      </p>
+      <ul>
+        <li>Email: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></li>
+        <li>Sitio web: <a href={SITE_URL}>{SITE_URL}</a></li>
+      </ul>
+    </>
+  ) : (
+    <>
+      <h2>1. Acceptance of Terms</h2>
+      <p>
+        By accessing and using the <strong>{COMPANY_NAME}</strong> website ({SITE_URL}), you accept and agree to be bound by these terms and conditions of use, all applicable laws and regulations, and agree that you are responsible for compliance with any applicable local laws.
+      </p>
+
+      <h2>2. Use of Website</h2>
+      <h3>2.1 License to Use</h3>
+      <p>
+        Permission is granted to temporarily download one copy of the materials on {COMPANY_NAME}'s website for personal, non-commercial transitory viewing only.
+      </p>
+
+      <h3>2.2 Restrictions</h3>
+      <p>You may not:</p>
+      <ul>
+        <li>Modify or copy the materials</li>
+        <li>Use the materials for any commercial purpose</li>
+        <li>Attempt to reverse engineer any software on the site</li>
+        <li>Remove any copyright or proprietary notations from the materials</li>
+        <li>Transfer the materials to another person</li>
+      </ul>
+
+      <h2>3. Professional Services</h2>
+      <p>
+        Human resources services offered by {COMPANY_NAME} are subject to separate contractual agreements. Information on this website is for informational purposes only and does not constitute a binding offer of services.
+      </p>
+
+      <h2>4. Accuracy of Information</h2>
+      <p>
+        The materials appearing on {COMPANY_NAME}'s website may include technical, typographical, or photographic errors. {COMPANY_NAME} does not warrant that any of the materials on its website are accurate, complete, or current.
+      </p>
+
+      <h2>5. Intellectual Property</h2>
+      <p>
+        All site content, including text, graphics, logos, icons, images, and software, is the property of {COMPANY_NAME} or its content suppliers and protected by international copyright laws.
+      </p>
+
+      <h2>6. Third-Party Links</h2>
+      <p>
+        {COMPANY_NAME} has not reviewed all sites linked to its website and is not responsible for the content of any linked site. The inclusion of any link does not imply endorsement by {COMPANY_NAME}.
+      </p>
+
+      <h2>7. Limitation of Liability</h2>
+      <p>
+        In no event shall {COMPANY_NAME} or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on {COMPANY_NAME}'s website.
+      </p>
+
+      <h2>8. Privacy and Data Protection</h2>
+      <p>
+        Your use of this website is also governed by our <a href={`/${lang}/privacy`}>Privacy Policy</a>. Please review it to understand our practices.
+      </p>
+
+      <h2>9. Modifications to Terms</h2>
+      <p>
+        {COMPANY_NAME} may revise these terms of service at any time without notice. By using this website, you agree to be bound by the current version of these terms of service.
+      </p>
+
+      <h2>10. Governing Law</h2>
+      <p>
+        These terms and conditions are governed by and construed in accordance with applicable laws and you irrevocably submit to the exclusive jurisdiction of the courts in that location.
+      </p>
+
+      <h2>11. Contact</h2>
+      <p>
+        If you have questions about these Terms and Conditions, contact us at:
+      </p>
+      <ul>
+        <li>Email: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></li>
+        <li>Website: <a href={SITE_URL}>{SITE_URL}</a></li>
+      </ul>
+    </>
+  )}
+</LegalLayout>

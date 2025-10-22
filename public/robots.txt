@@ -1,0 +1,27 @@
+# robots.txt for recruitment.ghadvisor360.com
+
+# Allow all search engines
+User-agent: *
+Allow: /
+
+# Disallow private pages
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://recruitment.ghadvisor360.com/sitemap-index.xml
+
+# Crawl delay (helps prevent server overload)
+Crawl-delay: 1
+
+# Specific rules for major search engines
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0.5
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 1

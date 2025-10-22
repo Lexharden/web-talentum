@@ -1,0 +1,92 @@
+---
+import Layout from './Layout.astro';
+import { getLangFromUrl } from '../i18n/utils';
+
+interface Props {
+  title: string;
+  lastUpdated: string;
+}
+
+const { title, lastUpdated } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+---
+
+<Layout title={title} lang={lang}>
+  <div class="min-h-screen bg-gray-50 py-12">
+    <div class="container-custom">
+      <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg p-8 md:p-12">
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          {title}
+        </h1>
+        <p class="text-gray-500 mb-8">
+          {lang === 'es' ? 'Última actualización' : 'Last updated'}: {lastUpdated}
+        </p>
+
+        <div class="legal-content">
+          <slot />
+        </div>
+
+        <div class="mt-12 pt-8 border-t border-gray-200">
+          <a
+            href={`/${lang}`}
+            class="inline-flex items-center text-purple-600 hover:text-purple-700 font-semibold"
+          >
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            {lang === 'es' ? 'Volver al inicio' : 'Back to home'}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .legal-content :global(h2) {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .legal-content :global(h3) {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .legal-content :global(p) {
+    color: #374151;
+    margin-bottom: 1rem;
+    line-height: 1.75;
+  }
+
+  .legal-content :global(ul),
+  .legal-content :global(ol) {
+    color: #374151;
+    margin-bottom: 1rem;
+    margin-left: 1.5rem;
+  }
+
+  .legal-content :global(li) {
+    margin-bottom: 0.5rem;
+  }
+
+  .legal-content :global(strong) {
+    font-weight: 600;
+    color: #111827;
+  }
+
+  .legal-content :global(a) {
+    color: #9333ea;
+    text-decoration: underline;
+  }
+
+  .legal-content :global(a:hover) {
+    color: #7e22ce;
+  }
+</style>
