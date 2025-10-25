@@ -1,0 +1,51 @@
+name: Deploy Talentum Astro
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy Talentum
+        env:
+          HOST: ${{ secrets.VPS_HOST }}
+          USER: ${{ secrets.VPS_USER }}
+          DEST: ${{ secrets.REPO_DEPLOY_DIR }}
+        run: |
+          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${USER}@${HOST} "
+            set -e
+            mkdir -p ${DEST}
+            cd ${DEST}
+            if [ ! -d .git ]; then
+              git clone $(git config --get remote.origin.url) .
+            else
+              git fetch origin
+              git reset --hard origin/main
+            fi
+            npm ci --silent
+            npm run build
+            # mover dist a carpeta pública
+            rm -rf ${DEST}/dist
+            mv dist ${DEST}/
+            sudo systemctl reload nginx || true
+          "
