@@ -1,4 +1,4 @@
-name: Deploy Talentum Astro
+name: Deploy Talentum with PM2
 
 on:
   push:
@@ -14,38 +14,42 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Setup Node 24
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-
-      - name: Setup SSH
+      - name: Setup SSH key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Deploy Talentum
+      - name: Sync files to VPS
+        run: |
+          rsync -avz --delete \
+            -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no" \
+            --exclude 'node_modules' \
+            --exclude '.git' \
+            --exclude 'dist' \
+            ./ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/html/talentum/
+
+      - name: Build and Restart PM2
         env:
           HOST: ${{ secrets.VPS_HOST }}
           USER: ${{ secrets.VPS_USER }}
-          DEST: ${{ secrets.REPO_DEPLOY_DIR }}
         run: |
-          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${USER}@${HOST} "
+          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${USER}@${HOST} bash -s <<'ENDSSH'
             set -e
-            mkdir -p ${DEST}
-            cd ${DEST}
-            if [ ! -d .git ]; then
-              git clone $(git config --get remote.origin.url) .
-            else
-              git fetch origin
-              git reset --hard origin/main
-            fi
+
+            export PATH="/home/yafel/.nvm/versions/node/v22.21.0/bin:$PATH"
+            
+            cd /var/www/html/talentum
+
+            echo "Installing dependencies..."
             npm ci --silent
+
+            echo "Building project..."
             npm run build
-            # mover dist a carpeta pública
-            rm -rf ${DEST}/dist
-            mv dist ${DEST}/
-            sudo systemctl reload nginx || true
-          "
+
+            echo "Restarting PM2..."
+            pm2 restart all
+
+            echo "Deployment completed!"
+          ENDSSH
