@@ -6,7 +6,7 @@ const t = useTranslations(lang);
 
 const testimonials = [
   {
-    name: 'María González',
+    name: 'Irving García',
     position: 'CEO, Tech Solutions',
     content: lang === 'es'
       ? 'Excelente servicio. Nos ayudaron a encontrar el talento perfecto para nuestro equipo de desarrollo. Su proceso es profesional y eficiente.'
@@ -32,52 +32,3 @@ const testimonials = [
 ];
 ---
 
-<section class="section-padding bg-white">
-  <div class="container-custom">
-    <div class="text-center mb-16 fade-in-up">
-      <span class="text-red-600 font-semibold text-sm uppercase tracking-wider mb-2 block">OUR TEAM</span>
-      <h2 class="text-4xl md:text-5xl font-bold text-black mb-4">
-        Meet The Team
-      </h2>
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      {testimonials.map((testimonial, index) => (
-        <div class="text-center fade-in-up" style={`animation-delay: ${index * 0.1}s`}>
-          <div class="relative mb-4 group">
-            <div class="w-32 h-32 mx-auto bg-gradient-to-br from-red-100 to-red-200 rounded-full flex items-center justify-center overflow-hidden">
-              <!-- Profile Image Placeholder -->
-              <div class="w-24 h-24 bg-red-300 rounded-full flex items-center justify-center">
-                <svg class="w-12 h-12 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
-                </svg>
-              </div>
-            </div>
-          </div>
-          <h3 class="text-lg font-bold text-black">{testimonial.name}</h3>
-        </div>
-      ))}
-      
-      <!-- Add more team members -->
-      {[
-        'Tom Oliver',
-        'Leonard Barnes', 
-        'Gilbert Sherman',
-        'Franklin Bailey'
-      ].map((name, index) => (
-        <div class="text-center fade-in-up" style={`animation-delay: ${(index + 3) * 0.1}s`}>
-          <div class="relative mb-4 group">
-            <div class="w-32 h-32 mx-auto bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center overflow-hidden">
-              <div class="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center">
-                <svg class="w-12 h-12 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
-                </svg>
-              </div>
-            </div>
-          </div>
-          <h3 class="text-lg font-bold text-black">{name}</h3>
-        </div>
-      ))}
-    </div>
-  </div>
-</section>

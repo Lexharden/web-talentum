@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 
 // Get site URL from environment variable or use default
-const siteUrl = process.env.PUBLIC_SITE_URL || 'https://gh360hunting.com';
+const siteUrl = process.env.PUBLIC_SITE_URL || 'https://talentum.ghadvisor360.com';
 
 // https://astro.build/config
 export default defineConfig({

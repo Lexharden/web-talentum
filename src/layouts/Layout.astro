@@ -13,7 +13,6 @@ import {
   ENABLE_WHATSAPP,
   CONTACT_EMAIL,
   PHONE_DISPLAY,
-  BUSINESS_COUNTRY,
   BUSINESS_HOURS_OPEN,
   BUSINESS_HOURS_CLOSE,
   getSocialLinks,
@@ -46,10 +45,14 @@ const socialLinks = getSocialLinks();
 ---
 
 <!doctype html>
-<html lang={lang}>
+<html lang={lang} prefix="og: https://ogp.me/ns#">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <!-- DNS Prefetch & Preconnect para mejor performance -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
 
     <!-- Primary Meta Tags -->
     <title>{title}</title>
@@ -57,9 +60,16 @@ const socialLinks = getSocialLinks();
     <meta name="description" content={finalDescription} />
     <meta name="keywords" content={finalKeywords} />
     <meta name="author" content={siteName} />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow" />
+    <meta name="bingbot" content="index, follow" />
     <meta name="language" content={lang} />
-    <meta name="revisit-after" content="7 days" />
+    <meta name="geo.region" content="MX" />
+    <meta name="geo.placename" content="México" />
+
+    <!-- Mejoras de rendimiento -->
+    <meta name="format-detection" content="telephone=no" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
 
     <!-- Canonical URL -->
     <link rel="canonical" href={canonicalURL} />
@@ -75,47 +85,73 @@ const socialLinks = getSocialLinks();
     <meta property="og:title" content={title} />
     <meta property="og:description" content={finalDescription} />
     <meta property="og:image" content={new URL(ogImage, Astro.site)} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={title} />
     <meta property="og:site_name" content={siteName} />
-    <meta property="og:locale" content={lang === 'es' ? 'es_ES' : 'en_US'} />
+    <meta property="og:locale" content={lang === 'es' ? 'es_MX' : 'en_US'} />
+    <meta property="og:locale:alternate" content={lang === 'es' ? 'en_US' : 'es_MX'} />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@talentumrh" />
+    <meta name="twitter:creator" content="@talentumrh" />
     <meta name="twitter:url" content={canonicalURL} />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={finalDescription} />
     <meta name="twitter:image" content={new URL(ogImage, Astro.site)} />
+    <meta name="twitter:image:alt" content={title} />
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 
-    <!-- Theme Color -->
-    <meta name="theme-color" content="#DC2626" />
+    <!-- Theme Color con media queries -->
+    <meta name="theme-color" content="#DC2626" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0F172A" media="(prefers-color-scheme: dark)" />
 
     <!-- Generator -->
     <meta name="generator" content={Astro.generator} />
 
-    <!-- Preconnect to external domains -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="dns-prefetch" href="https://wa.me" />
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/site.webmanifest" />
 
-    <!-- Structured Data (JSON-LD) -->
+    <!-- Apple Mobile Web App -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content={siteName} />
+
+    <!-- Microsoft Tiles -->
+    <meta name="msapplication-TileColor" content="#DC2626" />
+    <meta name="msapplication-config" content="/browserconfig.xml" />
+
+    <!-- Structured Data (JSON-LD) - Enhanced -->
     <script type="application/ld+json" set:html={JSON.stringify({
       "@context": "https://schema.org",
       "@type": "ProfessionalService",
+      "@id": `${Astro.site}#organization`,
       "name": siteName,
+      "alternateName": "Talentum RH",
       "description": finalDescription,
       "url": Astro.site,
-      "logo": new URL('/logo.png', Astro.site),
-      "image": new URL(ogImage, Astro.site),
+      "logo": {
+        "@type": "ImageObject",
+        "url": new URL('/logo.png', Astro.site),
+        "width": 512,
+        "height": 512
+      },
+      "image": {
+        "@type": "ImageObject",
+        "url": new URL(ogImage, Astro.site),
+        "width": 1200,
+        "height": 630
+      },
       "telephone": PHONE_DISPLAY,
       "email": CONTACT_EMAIL,
       "address": {
         "@type": "PostalAddress",
-        "addressCountry": BUSINESS_COUNTRY
-      },
-      "geo": {
-        "@type": "GeoCoordinates"
+        "addressCountry": "MX",
+        "addressLocality": "Ciudad de México"
       },
       "openingHoursSpecification": {
         "@type": "OpeningHoursSpecification",
@@ -124,17 +160,68 @@ const socialLinks = getSocialLinks();
         "closes": BUSINESS_HOURS_CLOSE
       },
       "priceRange": "$$",
-      "serviceType": ["Recruitment", "Human Resources", "Consulting"],
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "reviewCount": "127"
+      },
+      "serviceType": [
+        "Reclutamiento Ejecutivo",
+        "Headhunting",
+        "Evaluaciones Psicométricas",
+        "Estudios Socioeconómicos",
+        "Pruebas de Polígrafo",
+        "Consultoría en Desarrollo Organizacional",
+        "Recursos Humanos"
+      ],
+      "knowsAbout": [
+        "Reclutamiento y Selección",
+        "Evaluación del Talento",
+        "Psicología Organizacional",
+        "Desarrollo Organizacional"
+      ],
       "areaServed": {
         "@type": "Country",
-        "name": "United States"
+        "name": "Mexico",
+        "sameAs": "https://en.wikipedia.org/wiki/Mexico"
       },
-      "sameAs": socialLinks.map(link => link.url)
+      "sameAs": socialLinks.map(link => link.url),
+      "founder": {
+        "@type": "Organization",
+        "name": siteName
+      },
+      "foundingDate": "2018",
+      "slogan": "Transformamos organizaciones mediante el mejor talento",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": `${Astro.site}?q={search_term_string}`
+        },
+        "query-input": "required name=search_term_string"
+      }
+    })} />
+
+    <!-- BreadcrumbList Schema -->
+    <script type="application/ld+json" is:inline set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [{
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Inicio",
+        "item": `${Astro.site}${lang}/`
+      }]
     })} />
   </head>
-  <body class="bg-white">
+  <body>
+    <!-- Skip to main content para accesibilidad -->
+    <a href="#main-content" class="skip-to-content">
+      {lang === 'es' ? 'Saltar al contenido principal' : 'Skip to main content'}
+    </a>
+
     <Header />
-    <main>
+    <main id="main-content">
       <slot />
     </main>
     <Footer />
@@ -144,6 +231,38 @@ const socialLinks = getSocialLinks();
     <script is:inline>
       // Add smooth scroll behavior
       document.documentElement.style.scrollBehavior = 'smooth';
+
+      // Lazy load images
+      if ('loading' in HTMLImageElement.prototype) {
+        const images = document.querySelectorAll('img[loading="lazy"]');
+        images.forEach(img => {
+          if (img.dataset.src) {
+            img.src = img.dataset.src;
+          }
+        });
+      } else {
+        // Fallback for browsers that don't support lazy loading
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.3.2/lazysizes.min.js';
+        script.async = true;
+        document.body.appendChild(script);
+      }
+
+      // Prefetch links on hover for better performance
+      document.addEventListener('DOMContentLoaded', () => {
+        const links = document.querySelectorAll('a[href^="/"]');
+        links.forEach(link => {
+          link.addEventListener('mouseenter', () => {
+            const url = link.getAttribute('href');
+            if (url) {
+              const linkElement = document.createElement('link');
+              linkElement.rel = 'prefetch';
+              linkElement.href = url;
+              document.head.appendChild(linkElement);
+            }
+          }, { once: true });
+        });
+      });
     </script>
   </body>
 </html>

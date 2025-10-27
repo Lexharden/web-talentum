@@ -1,0 +1,543 @@
+---
+import Layout from '../Layout.astro';
+import { getLangFromUrl, useTranslations } from '../../i18n/utils';
+
+interface Props {
+  title: string;
+  description: string;
+  author: string;
+  publishDate: Date;
+  updatedDate?: Date;
+  category: string;
+  tags: string[];
+  image?: {
+    src: string;
+    alt: string;
+  };
+  lang: 'es' | 'en';
+  readingTime?: number;
+}
+
+const {
+  title,
+  description,
+  author,
+  publishDate,
+  updatedDate,
+  category,
+  tags,
+  image,
+  lang,
+  readingTime,
+} = Astro.props;
+
+const t = useTranslations(lang);
+
+// Formatear fechas
+const formattedDate = new Intl.DateTimeFormat(lang === 'es' ? 'es-MX' : 'en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+}).format(publishDate);
+
+const formattedUpdateDate = updatedDate
+  ? new Intl.DateTimeFormat(lang === 'es' ? 'es-MX' : 'en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }).format(updatedDate)
+  : null;
+
+// Calcular tiempo de lectura si no se proporciona
+const calculateReadingTime = (content: string) => {
+  const wordsPerMinute = 200;
+  const words = content.trim().split(/\s+/).length;
+  return Math.ceil(words / wordsPerMinute);
+};
+
+// Schema.org para artículo
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: title,
+  description: description,
+  author: {
+    '@type': 'Person',
+    name: author,
+  },
+  datePublished: publishDate.toISOString(),
+  dateModified: updatedDate ? updatedDate.toISOString() : publishDate.toISOString(),
+  image: image ? `https://talentum.ghadvisor360.com${image.src}` : undefined,
+  publisher: {
+    '@type': 'Organization',
+    name: 'Talentum',
+    logo: {
+      '@type': 'ImageObject',
+      url: 'https://talentum.ghadvisor360.com/logo.png',
+    },
+  },
+};
+---
+
+<Layout
+  title={`${title} | Talentum Blog`}
+  description={description}
+  lang={lang}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+
+  <article class="min-h-screen bg-white">
+    <!-- Hero del artículo -->
+    <header class="bg-white pt-24 pb-12 border-b border-gray-100">
+      <div class="container-custom max-w-4xl">
+        <!-- Breadcrumbs -->
+        <nav class="mb-6" aria-label="breadcrumb">
+          <ol class="flex items-center gap-2 text-sm text-gray-600">
+            <li>
+              <a href={`/${lang}`} class="hover:text-red-600 transition-colors">
+                {t('nav.home')}
+              </a>
+            </li>
+            <li>/</li>
+            <li>
+              <a href={`/${lang}/blog`} class="hover:text-red-600 transition-colors">
+                {t('blog.title')}
+              </a>
+            </li>
+            <li>/</li>
+            <li class="text-gray-400 truncate">{title}</li>
+          </ol>
+        </nav>
+
+        <!-- Categoría -->
+        <div class="mb-4">
+          <span class="inline-block px-4 py-1.5 bg-red-50 text-red-600 text-sm font-semibold rounded-full uppercase tracking-wide">
+            {category}
+          </span>
+        </div>
+
+        <!-- Título -->
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+          {title}
+        </h1>
+
+        <!-- Descripción -->
+        <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+          {description}
+        </p>
+
+        <!-- Metadata -->
+        <div class="flex flex-wrap items-center gap-6 text-sm text-gray-600">
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            <span class="font-medium">{author}</span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <time datetime={publishDate.toISOString()}>
+              {formattedDate}
+            </time>
+          </div>
+
+          {readingTime && (
+            <div class="flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>{readingTime} {lang === 'es' ? 'min de lectura' : 'min read'}</span>
+            </div>
+          )}
+        </div>
+
+        {formattedUpdateDate && (
+          <p class="mt-4 text-sm text-gray-500 italic">
+            {lang === 'es' ? 'Actualizado:' : 'Updated:'} {formattedUpdateDate}
+          </p>
+        )}
+      </div>
+    </header>
+
+    <!-- Imagen destacada -->
+    {image && (
+      <div class="container-custom max-w-4xl mb-12">
+        <img
+          src={image.src}
+          alt={image.alt}
+          class="w-full h-auto rounded-xl shadow-lg"
+          loading="eager"
+        />
+      </div>
+    )}
+
+    <!-- Contenido del artículo -->
+    <div class="bg-white py-12">
+      <div class="container-custom max-w-4xl">
+        <article class="blog-content bg-white">
+          <slot />
+        </article>
+      </div>
+    </div>
+
+    <div class="bg-white pb-16">
+      <div class="container-custom max-w-4xl">
+
+        <!-- Tags -->
+        {tags.length > 0 && (
+          <div class="pt-8 border-t border-gray-200">
+          <h3 class="text-sm font-semibold text-gray-900 mb-4 uppercase tracking-wide">
+            {lang === 'es' ? 'Etiquetas' : 'Tags'}
+          </h3>
+          <div class="flex flex-wrap gap-2">
+            {tags.map((tag) => (
+              <a
+                href={`/${lang}/blog?tag=${encodeURIComponent(tag)}`}
+                class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full hover:bg-red-50 hover:text-red-600 transition-colors"
+              >
+                #{tag}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <!-- Compartir en redes sociales -->
+      <div class="mt-12 pt-8 border-t border-gray-200">
+        <h3 class="text-sm font-semibold text-gray-900 mb-4 uppercase tracking-wide">
+          {lang === 'es' ? 'Compartir' : 'Share'}
+        </h3>
+        <div class="flex gap-4">
+          <a
+            href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(Astro.url.href)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex items-center justify-center w-10 h-10 bg-gray-100 text-gray-600 rounded-full hover:bg-blue-500 hover:text-white transition-colors"
+            aria-label="Compartir en Twitter"
+          >
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"></path>
+            </svg>
+          </a>
+          <a
+            href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(Astro.url.href)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex items-center justify-center w-10 h-10 bg-gray-100 text-gray-600 rounded-full hover:bg-blue-700 hover:text-white transition-colors"
+            aria-label="Compartir en LinkedIn"
+          >
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"></path>
+              <circle cx="4" cy="4" r="2"></circle>
+            </svg>
+          </a>
+          <a
+            href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(Astro.url.href)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex items-center justify-center w-10 h-10 bg-gray-100 text-gray-600 rounded-full hover:bg-blue-600 hover:text-white transition-colors"
+            aria-label="Compartir en Facebook"
+          >
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+        <!-- CTA -->
+        <div class="mt-16 p-8 bg-gradient-to-br from-red-50 to-gray-50 rounded-xl border border-red-100">
+          <h3 class="text-2xl font-bold text-gray-900 mb-3">
+            {lang === 'es'
+              ? '¿Necesitas soluciones de talento humano?'
+              : 'Need human talent solutions?'}
+          </h3>
+          <p class="text-gray-600 mb-6">
+            {lang === 'es'
+              ? 'Descubre cómo Talentum puede ayudarte a transformar tu estrategia de recursos humanos.'
+              : 'Discover how Talentum can help you transform your human resources strategy.'}
+          </p>
+          <a
+            href={`/${lang}/contact`}
+            class="btn-primary inline-block"
+          >
+            {lang === 'es' ? 'Contáctanos' : 'Contact Us'}
+          </a>
+        </div>
+      </div>
+    </div>
+  </article>
+</Layout>
+
+<style is:global>
+  .blog-content {
+    font-size: 1.125rem;
+    line-height: 1.875;
+    color: #1e293b;
+    background: #ffffff;
+  }
+
+  /* Headings */
+  .blog-content h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #000000;
+    margin-top: 3rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.3;
+    position: relative;
+    padding-bottom: 0.75rem;
+  }
+
+  .blog-content h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, #dc2626, #ef4444);
+    border-radius: 2px;
+  }
+
+  .blog-content h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+  }
+
+  .blog-content h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+  }
+
+  /* Paragraphs */
+  .blog-content p {
+    margin-bottom: 1.5rem;
+    color: #334155;
+    line-height: 1.875;
+  }
+
+  .blog-content p:first-of-type {
+    font-size: 1.25rem;
+    color: #1e293b;
+    line-height: 1.8;
+    font-weight: 400;
+  }
+
+  /* Links */
+  .blog-content a {
+    color: #dc2626;
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+  }
+
+  .blog-content a:hover {
+    color: #b91c1c;
+    border-bottom-color: #dc2626;
+  }
+
+  /* Strong and emphasis */
+  .blog-content strong {
+    color: #000000;
+    font-weight: 700;
+  }
+
+  .blog-content em {
+    color: #334155;
+    font-style: italic;
+  }
+
+  /* Lists */
+  .blog-content ul,
+  .blog-content ol {
+    margin: 1.5rem 0;
+    padding-left: 1.75rem;
+  }
+
+  .blog-content ul {
+    list-style-type: none;
+  }
+
+  .blog-content ul li {
+    position: relative;
+    margin-bottom: 0.75rem;
+    padding-left: 1.5rem;
+    color: #334155;
+    line-height: 1.75;
+  }
+
+  .blog-content ul li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.6rem;
+    width: 8px;
+    height: 8px;
+    background: #dc2626;
+    border-radius: 50%;
+  }
+
+  .blog-content ol {
+    list-style-type: decimal;
+    list-style-position: outside;
+  }
+
+  .blog-content ol li {
+    margin-bottom: 0.75rem;
+    padding-left: 0.5rem;
+    color: #334155;
+    line-height: 1.75;
+  }
+
+  .blog-content ol li::marker {
+    color: #dc2626;
+    font-weight: 700;
+  }
+
+  /* Nested lists */
+  .blog-content ul ul,
+  .blog-content ol ol,
+  .blog-content ul ol,
+  .blog-content ol ul {
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  /* Blockquotes */
+  .blog-content blockquote {
+    margin: 2rem 0;
+    padding: 1.5rem 1.5rem 1.5rem 2rem;
+    background: #fef2f2;
+    border-left: 4px solid #dc2626;
+    border-radius: 0.5rem;
+    font-style: italic;
+    color: #1e293b;
+    font-weight: 500;
+  }
+
+  .blog-content blockquote p {
+    margin-bottom: 0;
+  }
+
+  /* Code */
+  .blog-content code {
+    background: #fef2f2;
+    color: #dc2626;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.9em;
+    font-family: 'Courier New', monospace;
+    font-weight: 500;
+  }
+
+  .blog-content pre {
+    background: #1e293b;
+    color: #e2e8f0;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    margin: 2rem 0;
+    line-height: 1.6;
+  }
+
+  .blog-content pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    font-size: 0.875rem;
+  }
+
+  /* Horizontal rules */
+  .blog-content hr {
+    margin: 3rem 0;
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+  }
+
+  /* Images */
+  .blog-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    margin: 2rem 0;
+  }
+
+  /* Tables */
+  .blog-content table {
+    width: 100%;
+    margin: 2rem 0;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+
+  .blog-content table th {
+    background: #f8fafc;
+    color: #0f172a;
+    font-weight: 700;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 2px solid #dc2626;
+  }
+
+  .blog-content table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    color: #334155;
+  }
+
+  .blog-content table tr:hover {
+    background: #f8fafc;
+  }
+
+  /* Special formatting for first paragraph after h2 */
+  .blog-content h2 + p {
+    font-size: 1.125rem;
+    color: #334155;
+    margin-top: 1rem;
+  }
+
+  /* Lead paragraph class (if needed) */
+  .blog-content .lead {
+    font-size: 1.375rem;
+    line-height: 1.7;
+    color: #1e293b;
+    margin-bottom: 2rem;
+    font-weight: 500;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .blog-content {
+      font-size: 1rem;
+      line-height: 1.75;
+    }
+
+    .blog-content h2 {
+      font-size: 1.75rem;
+      margin-top: 2.5rem;
+    }
+
+    .blog-content h3 {
+      font-size: 1.375rem;
+      margin-top: 2rem;
+    }
+
+    .blog-content p:first-of-type {
+      font-size: 1.125rem;
+    }
+  }
+</style>

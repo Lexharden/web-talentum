@@ -10,33 +10,24 @@ const { icon, title, description, index = 0 } = Astro.props;
 ---
 
 <div
-  class="group relative bg-white p-8 rounded-xl shadow-md card-hover overflow-hidden fade-in-up border border-gray-100"
+  class="group relative bg-white p-8 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 fade-in-up border border-gray-200"
   style={`animation-delay: ${index * 0.1}s`}
-  loading="lazy"
 >
-  <!-- Red accent on hover -->
-  <div class="absolute top-0 left-0 w-full h-1 bg-red-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+  <!-- Barra superior roja -->
+  <div class="absolute top-0 left-0 w-full h-1 bg-brand-primary transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded-t-xl"></div>
 
-  <!-- Icon with background -->
-  <div class="relative mb-6">
-    <div class="w-16 h-16 bg-red-50 rounded-lg flex items-center justify-center text-4xl text-red-600 group-hover:bg-red-100 transition-colors duration-300">
-      {icon}
+  <!-- Icono -->
+  <div class="mb-6">
+    <div class="w-14 h-14 bg-red-50 rounded-lg flex items-center justify-center text-3xl text-brand-primary">
+      <span role="img" aria-label={title}>{icon}</span>
     </div>
   </div>
 
-  <!-- Content -->
-  <h3 class="text-xl font-bold text-black mb-4 group-hover:text-red-600 transition-colors duration-300">
+  <!-- Contenido -->
+  <h3 class="text-xl font-bold text-gray-900 mb-3">
     {title}
   </h3>
-  <p class="text-gray-600 leading-relaxed mb-6">
+  <p class="text-gray-600 leading-relaxed">
     {description}
   </p>
-
-  <!-- Learn More Button -->
-  <button class="text-red-600 font-semibold hover:text-red-700 transition-colors duration-300 flex items-center gap-2">
-    Learn More
-    <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-    </svg>
-  </button>
 </div>

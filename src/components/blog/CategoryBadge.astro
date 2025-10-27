@@ -1,0 +1,28 @@
+---
+interface Props {
+  category: string;
+  size?: 'sm' | 'md' | 'lg';
+  href?: string;
+}
+
+const { category, size = 'md', href } = Astro.props;
+
+const sizeClasses = {
+  sm: 'px-2 py-0.5 text-xs',
+  md: 'px-3 py-1 text-xs',
+  lg: 'px-4 py-1.5 text-sm',
+};
+
+const Component = href ? 'a' : 'span';
+---
+
+<Component
+  href={href}
+  class:list={[
+    'inline-block bg-red-50 text-red-600 font-semibold rounded-full uppercase tracking-wide transition-colors',
+    sizeClasses[size],
+    href && 'hover:bg-red-600 hover:text-white cursor-pointer',
+  ]}
+>
+  {category.replace(/-/g, ' ')}
+</Component>

@@ -6,24 +6,22 @@ const t = useTranslations(lang);
 
 const stats = [
   { value: '500+', label: t('stats.clients') },
-  { value: '2,000+', label: t('stats.placements') },
-  { value: '15+', label: t('stats.experience') },
+  { value: '95%', label: t('stats.placements') },
+  { value: '2,500+', label: t('stats.experience') },
   { value: '98%', label: t('stats.satisfaction') },
 ];
 ---
 
-<section class="section-padding bg-white border-y border-gray-100">
+<section class="section-padding bg-gray-50">
   <div class="container-custom">
-    <div class="text-center mb-12">
-      <h2 class="text-3xl md:text-4xl font-bold text-black mb-4">{t('stats.title')}</h2>
+    <div class="text-center mb-12 fade-in-up">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{t('stats.title')}</h2>
       <p class="text-gray-600 max-w-3xl mx-auto">{t('stats.description')}</p>
     </div>
+
     <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
       {stats.map((stat, index) => (
-        <div
-          class="text-center fade-in-up"
-          style={`animation-delay: ${index * 0.1}s`}
-        >
+        <div class="text-center fade-in-up" style={`animation-delay: ${index * 0.1}s`}>
           <div class="text-4xl md:text-5xl font-bold text-red-600 mb-2">
             {stat.value}
           </div>

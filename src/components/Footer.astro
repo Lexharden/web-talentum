@@ -55,7 +55,7 @@ const socialIcons = {
           <li><a href={`/${lang}#about`} class="text-gray-400 hover:text-white transition-colors duration-300">{t('nav.about')}</a></li>
           <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-300">{t('footer.career')}</a></li>
           <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-300">{t('footer.partners')}</a></li>
-          <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-300">{t('footer.blog')}</a></li>
+          <li><a href={`/${lang}/blog`} class="text-gray-400 hover:text-white transition-colors duration-300">{t('footer.blog')}</a></li>
           <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-300">{t('footer.clients')}</a></li>
         </ul>
       </div>
@@ -79,12 +79,12 @@ const socialIcons = {
         <div class="flex items-center space-x-6 mb-4 md:mb-0">
           <div class="flex items-center space-x-2">
             <div class="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center">
-              <span class="text-white font-bold text-sm">G</span>
+              <span class="text-white font-bold text-sm">T</span>
             </div>
             <span class="text-xl font-bold">{COMPANY_NAME}</span>
           </div>
           <p class="text-gray-400 text-sm">
-            Copyright © {currentYear} {COMPANY_NAME} {t('footer.rights')}.
+            Copyright © {currentYear} {COMPANY_NAME}. {t('footer.rights')}.
           </p>
         </div>
         

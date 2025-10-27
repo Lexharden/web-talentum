@@ -26,9 +26,9 @@ output/
 Thumbs.db
 
 # Lock files (si no quieres versionarlos)
-# package-lock.json
-# pnpm-lock.yaml
-# yarn.lock
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
 
 # macOS & system files
 *.DS_Store

@@ -1,0 +1,117 @@
+{
+  "$ref": "#/definitions/blog",
+  "definitions": {
+    "blog": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "author": {
+          "type": "string",
+          "default": "Talentum"
+        },
+        "publishDate": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "string",
+              "format": "date"
+            },
+            {
+              "type": "integer",
+              "format": "unix-time"
+            }
+          ]
+        },
+        "updatedDate": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "string",
+              "format": "date"
+            },
+            {
+              "type": "integer",
+              "format": "unix-time"
+            }
+          ]
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "reclutamiento",
+            "recursos-humanos",
+            "psicometria",
+            "desarrollo-organizacional",
+            "tendencias",
+            "consejos",
+            "casos-exito"
+          ]
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "lang": {
+          "type": "string",
+          "enum": [
+            "es",
+            "en"
+          ],
+          "default": "es"
+        },
+        "image": {
+          "type": "object",
+          "properties": {
+            "src": {
+              "type": "string"
+            },
+            "alt": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "src",
+            "alt"
+          ],
+          "additionalProperties": false
+        },
+        "draft": {
+          "type": "boolean",
+          "default": false
+        },
+        "featured": {
+          "type": "boolean",
+          "default": false
+        },
+        "readingTime": {
+          "type": "number"
+        },
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "description",
+        "publishDate",
+        "category"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
