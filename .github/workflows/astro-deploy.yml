@@ -11,8 +11,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci --silent
+
+      - name: Build project
+        run: |
+          echo "Compiling project in GitHub Actions runner..."
+          NODE_OPTIONS="--max-old-space-size=512" npm run build
 
       - name: Setup SSH key
         run: |
@@ -21,56 +34,35 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Sync files to VPS
+      - name: Deploy compiled files to VPS
         run: |
+          echo "Deploying compiled build to VPS..."
+          BUILD_DIR="dist"
+          if [ ! -d "$BUILD_DIR" ]; then
+            BUILD_DIR="build"
+          fi
+
+          if [ ! -d "$BUILD_DIR" ]; then
+            echo "❌ No se encontró carpeta de build ni dist."
+            exit 1
+          fi
+
+          # Limpia completamente el directorio remoto antes de subir el build
+          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "rm -rf /var/www/html/talentum/*"
+
+          # Sube solo los archivos del build compilado
           rsync -avz --delete \
             -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no" \
-            --exclude 'node_modules' \
-            --exclude '.git' \
-            --exclude 'dist' \
-            ./ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/html/talentum/
+            ${BUILD_DIR}/ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/html/talentum/
 
-      - name: Build and Deploy Compiled Files
+      - name: Restart PM2
         env:
           HOST: ${{ secrets.VPS_HOST }}
           USER: ${{ secrets.VPS_USER }}
         run: |
+          echo "Restarting PM2 process on VPS..."
           ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${USER}@${HOST} bash -s <<'ENDSSH'
-            set -e
             export PATH="/home/yafel/.nvm/versions/node/v22.21.0/bin:$PATH"
-
-            cd /var/www/html/talentum
-
-            echo "Installing dependencies..."
-            npm ci --silent
-
-            echo "Building project..."
-            npm run build
-
-            echo "Preparing deployment..."
-            TEMP_DIR="/tmp/talentum_build_$(date +%s)"
-            mkdir -p "$TEMP_DIR"
-
-            if [ -d "dist" ]; then
-              cp -r dist/* "$TEMP_DIR/"
-            elif [ -d "build" ]; then
-              cp -r build/* "$TEMP_DIR/"
-            else
-              echo "❌ No se encontró carpeta de compilado (dist o build)."
-              exit 1
-            fi
-
-            echo "Cleaning old project files..."
-            find . -mindepth 1 -maxdepth 1 ! -name 'node_modules' ! -name '.pm2' -exec rm -rf {} +
-
-            echo "Deploying new build to root..."
-            cp -r "$TEMP_DIR"/* .
-
-            echo "Cleaning temp files..."
-            rm -rf "$TEMP_DIR"
-
-            echo "Restarting PM2..."
             pm2 restart all || pm2 start ecosystem.config.js
-
-            echo "✅ Deployment completed successfully!"
+            echo "✅ PM2 restarted successfully."
           ENDSSH
